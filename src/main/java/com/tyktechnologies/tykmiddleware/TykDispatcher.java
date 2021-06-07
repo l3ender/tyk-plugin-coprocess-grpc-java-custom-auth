@@ -25,6 +25,8 @@ public class TykDispatcher extends DispatcherGrpc.DispatcherImplBase {
     }
 
     CoprocessObject.Object MyAuthHook(CoprocessObject.Object request) {
+        String requestBody = request.getRequest().getRawBody().toStringUtf8();
+        System.out.println("body: " + requestBody);
         String authHeader = request.getRequest().getHeadersOrDefault("Authorization", "");
         if(!authHeader.equals(FOOBAR)) {
             CoprocessObject.Object.Builder builder = request.toBuilder();
@@ -32,6 +34,8 @@ public class TykDispatcher extends DispatcherGrpc.DispatcherImplBase {
             .setResponseCode(403)
             .setResponseError("Not authorized")
             .build();
+
+            System.out.println("not authorized");
 
             builder.getRequestBuilder().setReturnOverrides(retOverrides);
             return builder.build();
